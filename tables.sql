@@ -31,7 +31,7 @@ CREATE TABLE LimitedCourses(
 );
 
 CREATE TABLE StudentBranches(
-    student TEXT PRIMARY KEY,
+    student TEXT PRIMARY KEY CHECK (student SIMILAR TO '[0-9]{10}'),
     branch TEXT NOT NULL,
     program TEXT NOT NULL,
     FOREIGN KEY (student) REFERENCES Students,
