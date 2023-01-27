@@ -12,7 +12,7 @@ CREATE VIEW FinishedCourses AS (SELECT student, course, grade, credits FROM Take
 
 -- 3 
 
-CREATE VIEW PassedCourses AS (SELECT student, course, credits FROM Taken AS T JOIN Courses AS C ON T.course = C.code 
+CREATE VIEW PassedCourses AS (SELECT student, course, credits FROM FinishedCourses 
     WHERE grade != 'U');
 
 
