@@ -29,15 +29,10 @@ CREATE VIEW StudentMandatoryProgramCourses AS (SELECT idnr AS student, course FR
     MandatoryProgram AS M ON S.program = M.program);
 
 CREATE VIEW StudentMandatoryBranchCourses AS (SELECT student, course FROM StudentBranches AS SB JOIN
-    MandatoryBranch AS MB ON SB.branch = MB.branch);
+    MandatoryBranch AS MB ON (SB.branch, SB.program) = (MB.branch, MB.program));
 
 CREATE VIEW StudentMandatoryCourses AS (SELECT student, course FROM StudentMandatoryBranchCourses 
     UNION SELECT student, course FROM StudentMandatoryProgramCourses);
 
 CREATE VIEW UnreadMandatory AS (SELECT student, course FROM StudentMandatoryCourses 
-    WHERE (student, course) NOT IN (SELECT student, course FROM Taken WHERE grade != 'U'));
-
-
-SELECT * FROM StudentMandatoryCourses ORDER BY student;
-
-SELECT * FROM Taken ORDER BY student;
+    WHERE (student, course) NOT IN (SELECT student, course FROM PassedCourses));
