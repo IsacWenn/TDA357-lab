@@ -20,7 +20,7 @@ CREATE TABLE Program(
 CREATE TABLE Courses(
     code CHAR(6) PRIMARY KEY,
     name TEXT NOT NULL,
-    credits TEXT NOT NULL,
+    credits FLOAT NOT NULL,
     department TEXT NOT NULL
 );
 

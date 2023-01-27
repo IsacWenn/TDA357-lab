@@ -29,7 +29,7 @@ SET client_min_messages TO NOTICE; -- More talk
 
 -- SELECT student, course, status FROM Registrations ORDER BY student;
 
-SELECT student, course FROM UnreadMandatory ORDER BY student;
+-- SELECT student, course FROM UnreadMandatory ORDER BY student;
 
 -- SELECT student, totalCredits, mandatoryLeft, mathCredits, researchCredits, seminarCourses, qualified FROM PathToGraduation ORDER BY student;
 

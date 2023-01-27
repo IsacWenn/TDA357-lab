@@ -36,3 +36,31 @@ CREATE VIEW StudentMandatoryCourses AS (SELECT student, course FROM StudentManda
 
 CREATE VIEW UnreadMandatory AS (SELECT student, course FROM StudentMandatoryCourses 
     WHERE (student, course) NOT IN (SELECT student, course FROM PassedCourses));
+
+-- 6
+
+CREATE VIEW TotalCredits AS (SELECT student, SUM(credits) AS totalCredits FROM PassedCourses GROUP BY student);
+SELECT * FROM TotalCredits;
+
+CREATE VIEW MandatoryLeft AS (SELECT student, COUNT(course) AS mandatoryLeft FROM UnreadMandatory GROUP BY student);
+SELECT * FROM MandatoryLeft;
+
+CREATE VIEW MathCredits AS (SELECT student, SUM(credits) AS mathCredits FROM 
+    PassedCourses AS PC JOIN Classified AS C ON PC.course = C.course
+    WHERE classification = 'math'
+    GROUP BY student);
+SELECT * FROM MathCredits;
+
+CREATE VIEW ResearchCredits AS (SELECT student, SUM(credits) AS researchCredits FROM 
+    PassedCourses AS PC JOIN Classified AS C ON PC.course = C.course
+    WHERE classification = 'research'
+    GROUP BY student);
+SELECT * FROM ResearchCredits;
+
+CREATE VIEW SeminarCourses AS (SELECT student, COUNT(C.course) AS seminarCourses FROM 
+    PassedCourses AS PC JOIN Classified AS C ON PC.course = C.course
+    WHERE classification = 'seminar'
+    GROUP BY student);
+SELECT * FROM SeminarCourses;
+
+-- CREATE VIEW PathToGraduation AS (SELECT idnr AS student, totalCredits, mandatoryLeft, mathCredits, researchCredits, seminarCourses, qualified)
