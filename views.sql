@@ -63,18 +63,32 @@ CREATE VIEW SeminarCourses AS (SELECT student, COUNT(C.course) AS seminarCourses
     GROUP BY student);
 SELECT * FROM SeminarCourses;
 
--- last sub-part
-
-CREATE VIEW RecommendedCredits AS (SELECT student, SUM(credits) AS RecommendedCredits FROM
+CREATE VIEW RecommendedCourses AS (SELECT student, course, credits AS recommendedCredits FROM
     StudentBranches AS SB JOIN RecommendedBranch AS RB ON (SB.branch, SB.program) = (RB.branch, RB.program)
-    JOIN Courses AS C ON course = code AS TOT
-    JOIN Taken AS T ON (TOT.student, TOT.course) = (T.student, T.course)
+    JOIN Courses AS C ON course = code);
+SELECT * FROM RecommendedCourses;
+
+CREATE VIEW RecommendedCredits AS (SELECT RC.student, SUM(RC.recommendedCredits) AS RecommendedCredits FROM
+    RecommendedCourses AS RC
+    JOIN Taken AS T ON (RC.student, RC.course) = (T.student, T.course)
     WHERE grade != 'U'
-    GROUP BY student);
+    GROUP BY RC.student);
 SELECT * FROM RecommendedCredits;
-/*
-CREATE VIEW QualifiedStudents AS (SELECT BI.idnr AS student
-    FROM BasicInformation AS BI, MathCredits AS MC, ResearchCredits AS RC, SeminarCourses AS SC
+
+CREATE VIEW StudentQualificationInfo AS (SELECT student, COALESCE(mandatoryLeft, 0) AS mandatoryLeft, 
+    COALESCE(recommendedCredits, 0.0) AS recommendedCredits, COALESCE(mathCredits. 0.0) AS mathCredits, 
+    COALESCE(researchCredits, 0.0) AS researchCredits, COALESCE(seminarCourses, 0) AS seminarCourses FROM
+    (SELECT BI.idnr AS student FROM BasicInformation AS BI) FULL OUTER JOIN MandatoryLeft ON student
+    FULL OUTER JOIN RecommendedCredits ON student
+    FULL OUTER JOIN MathCredits ON student
+    FULL OUTER JOIN ResearchCredits ON student
+    FULL OUTER JOIN SeminarCourses ON student);
+SELECT * StudentQualificationInfo;
+
+CREATE VIEW QualifiedStudents AS (SELECT BI.idnr AS student, 
+    CASE 
+        WHEN ()
+    FROM BasicInformation AS BI, MathCredits AS MC, ResearchCredits AS RC, SeminarCourses AS SC, RecommendedCredits AS REC
     WHERE BI.idnr == 
     --WHERE (BI.student NOT IN (SELECT MandatoryLeft.student FROM MandatoryLeft) 
     --AND true -- kommer senare
@@ -83,7 +97,7 @@ CREATE VIEW QualifiedStudents AS (SELECT BI.idnr AS student
     --AND SeminarCourses.student >= 1
     );
 SELECT * FROM QualifiedStudents;
-*/
+
 
 -- all mandatory
 -- 10 credits of recommended from branch
