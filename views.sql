@@ -63,4 +63,32 @@ CREATE VIEW SeminarCourses AS (SELECT student, COUNT(C.course) AS seminarCourses
     GROUP BY student);
 SELECT * FROM SeminarCourses;
 
+-- last sub-part
+
+CREATE VIEW RecommendedCredits AS (SELECT student, SUM(credits) AS RecommendedCredits FROM
+    StudentBranches AS SB JOIN RecommendedBranch AS RB ON (SB.branch, SB.program) = (RB.branch, RB.program)
+    JOIN Courses AS C ON course = code AS TOT
+    JOIN Taken AS T ON (TOT.student, TOT.course) = (T.student, T.course)
+    WHERE grade != 'U'
+    GROUP BY student);
+SELECT * FROM RecommendedCredits;
+/*
+CREATE VIEW QualifiedStudents AS (SELECT BI.idnr AS student
+    FROM BasicInformation AS BI, MathCredits AS MC, ResearchCredits AS RC, SeminarCourses AS SC
+    WHERE BI.idnr == 
+    --WHERE (BI.student NOT IN (SELECT MandatoryLeft.student FROM MandatoryLeft) 
+    --AND true -- kommer senare
+    --AND MathCredits.student >= 20
+    --AND ResearchCredits.student >= 10
+    --AND SeminarCourses.student >= 1
+    );
+SELECT * FROM QualifiedStudents;
+*/
+
+-- all mandatory
+-- 10 credits of recommended from branch
+-- 20 cretits of math
+-- 10 credits of research
+-- 1 seminar course
+
 -- CREATE VIEW PathToGraduation AS (SELECT idnr AS student, totalCredits, mandatoryLeft, mathCredits, researchCredits, seminarCourses, qualified)

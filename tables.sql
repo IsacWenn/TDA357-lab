@@ -92,6 +92,7 @@ CREATE TABLE Taken(
     FOREIGN KEY (course) REFERENCES Courses
 );
 
+
 CREATE TABLE WaitingList(
     student TEXT NOT NULL CHECK (student SIMILAR TO '[0-9]{10}'),
     course CHAR(6) NOT NULL,
