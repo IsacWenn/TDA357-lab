@@ -75,15 +75,15 @@ CREATE VIEW RecommendedCredits AS (SELECT RC.student, SUM(RC.recommendedCredits)
     GROUP BY RC.student);
 SELECT * FROM RecommendedCredits;
 
-CREATE VIEW StudentQualificationInfo AS (SELECT student, COALESCE(mandatoryLeft, 0) AS mandatoryLeft, 
-    COALESCE(recommendedCredits, 0.0) AS recommendedCredits, COALESCE(mathCredits. 0.0) AS mathCredits, 
+CREATE VIEW StudentQualificationInfo AS (SELECT BI.student, COALESCE(mandatoryLeft, 0) AS mandatoryLeft, 
+    COALESCE(recommendedCredits, 0.0) AS recommendedCredits, COALESCE(mathCredits, 0.0) AS mathCredits, 
     COALESCE(researchCredits, 0.0) AS researchCredits, COALESCE(seminarCourses, 0) AS seminarCourses FROM
-    (SELECT BI.idnr AS student FROM BasicInformation AS BI) FULL OUTER JOIN MandatoryLeft ON student
-    FULL OUTER JOIN RecommendedCredits ON student
-    FULL OUTER JOIN MathCredits ON student
-    FULL OUTER JOIN ResearchCredits ON student
-    FULL OUTER JOIN SeminarCourses ON student);
-SELECT * StudentQualificationInfo;
+    (SELECT idnr AS student FROM BasicInformation) AS BI FULL OUTER JOIN MandatoryLeft ON (BI.student = MandatoryLeft.student)
+    FULL OUTER JOIN RecommendedCredits ON BI.student = RecommendedCredits.student
+    FULL OUTER JOIN MathCredits ON BI.student = MathCredits.student
+    FULL OUTER JOIN ResearchCredits ON BI.student = ResearchCredits.student
+    FULL OUTER JOIN SeminarCourses ON BI.student = SeminarCourses.student);
+SELECT * FROM StudentQualificationInfo;
 
 CREATE VIEW QualifiedStudents AS (SELECT BI.idnr AS student, 
     CASE 
