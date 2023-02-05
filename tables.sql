@@ -86,12 +86,11 @@ CREATE TABLE Registered(
 CREATE TABLE Taken(
     student TEXT NOT NULL CHECK (student SIMILAR TO '[0-9]{10}'),
     course CHAR(6) NOT NULL,
-    grade CHAR(1) DEFAULT 'U' CHECK (grade IN ('U', '3', '4', '5')),
+    grade CHAR(1) DEFAULT 'U' NOT NULL CHECK (grade IN ('U', '3', '4', '5')),
     PRIMARY KEY(student, course),
     FOREIGN KEY (student) REFERENCES Students,
     FOREIGN KEY (course) REFERENCES Courses
 );
-
 
 CREATE TABLE WaitingList(
     student TEXT NOT NULL CHECK (student SIMILAR TO '[0-9]{10}'),
