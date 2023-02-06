@@ -79,7 +79,7 @@ CREATE VIEW StudentQualificationInfo AS (SELECT BI.student, COALESCE(mandatoryLe
 
 CREATE VIEW QualifiedStudents AS (SELECT student, 
     (CASE WHEN (mandatoryLeft = 0 AND recommendedCredits >= 10 AND mathCredits >= 20 AND
-        researchCredits >= 10 AND SeminarCourses >= 1) THEN 't' ELSE 'f' END) AS qualified
+        researchCredits >= 10 AND SeminarCourses >= 1) THEN TRUE ELSE FALSE END) AS qualified
     FROM StudentQualificationInfo );
 
 CREATE VIEW PathToGraduation AS (SELECT SQI.student, COALESCE(totalCredits, 0) AS totalCredits, mandatoryLeft,
