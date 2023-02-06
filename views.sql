@@ -20,7 +20,7 @@ CREATE VIEW PassedCourses AS (SELECT student, course, credits FROM FinishedCours
 
 CREATE VIEW Registrations AS (SELECT student, course, 'waiting' AS status FROM WaitingList
     UNION ALL
-    SELECT student, course, 'registred' AS status FROM Registered);
+    SELECT student, course, 'registered' AS status FROM Registered);
 
 
 -- 5
