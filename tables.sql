@@ -20,18 +20,18 @@ CREATE TABLE Program(
 CREATE TABLE Courses(
     code CHAR(6) PRIMARY KEY,
     name TEXT NOT NULL,
-    credits FLOAT NOT NULL,
+    credits FLOAT NOT NULL CHECK (credits >= 0),
     department TEXT NOT NULL
 );
 
 CREATE TABLE LimitedCourses(
     code CHAR(6) PRIMARY KEY,
-    capacity INT NOT NULL CHECK (capacity > 0),
+    capacity INT NOT NULL CHECK (capacity >= 0),
     FOREIGN KEY (code) REFERENCES Courses
 );
 
 CREATE TABLE StudentBranches(
-    student TEXT PRIMARY KEY CHECK (student SIMILAR TO '[0-9]{10}'),
+    student TEXT PRIMARY KEY,
     branch TEXT NOT NULL,
     program TEXT NOT NULL,
     FOREIGN KEY (student) REFERENCES Students,
@@ -76,7 +76,7 @@ CREATE TABLE RecommendedBranch(
 );
 
 CREATE TABLE Registered(
-    student TEXT NOT NULL CHECK (student SIMILAR TO '[0-9]{10}'),
+    student TEXT NOT NULL,
     course CHAR(6) NOT NULL,
     PRIMARY KEY(student, course),
     FOREIGN KEY (student) REFERENCES Students,
@@ -84,7 +84,7 @@ CREATE TABLE Registered(
 );
 
 CREATE TABLE Taken(
-    student TEXT NOT NULL CHECK (student SIMILAR TO '[0-9]{10}'),
+    student TEXT NOT NULL,
     course CHAR(6) NOT NULL,
     grade CHAR(1) DEFAULT 'U' NOT NULL CHECK (grade IN ('U', '3', '4', '5')),
     PRIMARY KEY(student, course),
@@ -93,7 +93,7 @@ CREATE TABLE Taken(
 );
 
 CREATE TABLE WaitingList(
-    student TEXT NOT NULL CHECK (student SIMILAR TO '[0-9]{10}'),
+    student TEXT NOT NULL,
     course CHAR(6) NOT NULL,
     position TIMESTAMP NOT NULL,
     PRIMARY KEY(student, course),
