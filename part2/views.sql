@@ -29,10 +29,10 @@ CREATE VIEW UnreadMandatory AS (
     WITH 
         StudentMandatoryProgramCourses AS (
             SELECT idnr AS student, course FROM Students AS S JOIN 
-            MandatoryProgram AS M ON S.program = M.program
+            ProgramMandatoryCourses AS M ON S.program = M.program
         ), StudentMandatoryBranchCourses AS (
             SELECT student, course FROM StudentBranches AS SB JOIN
-            MandatoryBranch AS MB ON (SB.branch, SB.program) = (MB.branch, MB.program)
+            BranchMandatoryCourses AS MB ON (SB.branch, SB.program) = (MB.branch, MB.program)
         ), StudentMandatoryCourses AS (
             SELECT student, course FROM StudentMandatoryBranchCourses 
             UNION SELECT student, course FROM StudentMandatoryProgramCourses
@@ -40,6 +40,8 @@ CREATE VIEW UnreadMandatory AS (
     SELECT student, course FROM StudentMandatoryCourses 
     WHERE (student, course) NOT IN (SELECT student, course FROM PassedCourses)
 );
+
+--CREATE VIEW UnreadMandatory AS
 
 -- 6
 
@@ -60,7 +62,7 @@ CREATE VIEW PathToGraduation AS (
             SELECT student, COUNT(C.course) AS seminarCourses FROM PassedCourses AS PC JOIN Classified AS C ON PC.course = C.course
             WHERE classification = 'seminar' GROUP BY student
         ), RecommendedCourses AS (
-            SELECT student, course, credits AS recommendedCredits FROM StudentBranches AS SB JOIN RecommendedBranch AS RB
+            SELECT student, course, credits AS recommendedCredits FROM StudentBranches AS SB JOIN BranchRecommendedCourses AS RB
             ON (SB.branch, SB.program) = (RB.branch, RB.program) JOIN Courses AS C ON course = code
         ), RecommendedCredits AS (
             SELECT BI.idnr AS student, COALESCE(SUM(RC.recommendedCredits), 0)AS RecommendedCredits FROM

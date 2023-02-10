@@ -85,8 +85,8 @@ CREATE TABLE StudentBranches(
     branch TEXT NOT NULL,
     program TEXT NOT NULL,
     FOREIGN KEY (branch, program) REFERENCES Branches,
-    FOREIGN KEY (student) REFERENCES Students,
-    
+    FOREIGN KEY (student, program) REFERENCES Students(idnr, program)
+
 );
 
 CREATE TABLE Taken(
