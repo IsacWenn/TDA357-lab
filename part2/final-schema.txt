@@ -1,0 +1,82 @@
+-- Entities
+
+Programs(_name_, abbreviation)
+
+Departments(_name_, abbreviation)
+    Unique abbreviation
+
+Students(_idnr_, name, login, program)
+    program -> Programs.name
+
+    Unique login
+
+Branches(_name_, _program_)
+    _program_ -> Programs.name
+
+Courses(_code_, name, credit, department)
+    _department_ -> Departments.name
+
+    credit >= 0
+
+LimitedCourses(_course_, capacity)
+    _course_ -> Courses.code
+
+    capacity >= 0
+
+Classifications(_name_)
+
+-- Relations ##################################################################################################
+
+ProgramHosts(_department_, _program_)
+    _department_ -> Departments.name
+    _program_ -> Programs.name
+
+ProgramMandatoryCourses(_course_, _program_)
+    _course_ -> Courses.code
+    _program_ -> Programs.name
+
+BranchMandatoryCourses(_course_, _branch_, _program_)
+    _course_ -> Courses.name
+    (_branch_, _program_) -> Branches.(name, program)
+
+BranchRecommendedCourses(_course_, _branch_, _program_)
+    _course_ -> Courses.name
+    (_branch_, _program_) -> Branches.(name, program)
+
+StudentBranches(_student_, branch, program)
+    _student_ -> Students.idnr
+    (branch, program) -> Branches.(name, program)
+
+    Students(_student_).program = program
+
+Taken(_student_, _course_, grade)
+    _student_ -> Students.idnr
+    _course_ -> Courses.code
+
+    grade in {'U', '3', '4', '5'}
+    Default grade is 'U'
+
+Registered(_student_, _course_)
+    _student_ -> Students.idnr
+    _course_ -> Courses.code
+
+/*
+We did not mark position as a secondary key since we chose to implement it using a TIMESTAMP.
+The reason for chosing TIMESTAMP over SERIAL was that we thought that having waitingList number representing your queue place
+for registring should be course specific instead representing what number out of all students waiting for all courses you are.
+
+By using a TIMESTAMP instead this is easily calculated in backend.
+
+Since it is technically possible, however EXTREMELY unprobable, that somehow two positions are the same the attribute is not UNIQUE.
+*/
+WaitingList(_student_, _course_, position)
+    _student_ -> Students.idnr
+    _course_ -> Courses.code
+
+Classified(_classification_, _course_)
+    _classification_ -> Classifications.name
+    _course_ -> Courses.code
+
+Prerequisites(_course_, _requirement_)
+    _course_ -> Courses.code
+    _requirement_ -> Courses.code
