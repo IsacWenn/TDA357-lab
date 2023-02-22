@@ -18,8 +18,9 @@ SET client_min_messages TO NOTICE; -- More talk
 \ir tables.sql
 \ir inserts.sql
 \ir views.sql
+\ir tests.sql
 
-
+/*
 -- Tests various queries from the assignment, uncomment these as you make progress
 
 SELECT idnr, name, login, program, branch FROM BasicInformation ORDER BY idnr;
@@ -35,3 +36,6 @@ SELECT student, course FROM UnreadMandatory ORDER BY student;
 SELECT student, totalCredits, mandatoryLeft, mathCredits, researchCredits, seminarCourses, qualified FROM PathToGraduation ORDER BY student;
 
 -- Life-hack: When working on a new view you can write it as a query here (without creating a view) and when it works just add CREATE VIEW and put it in views.sql
+*/
+
+SELECT * FROM Registrations;

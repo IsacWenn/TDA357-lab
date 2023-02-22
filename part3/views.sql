@@ -22,6 +22,35 @@ CREATE VIEW Registrations AS (SELECT student, course, 'waiting' AS status FROM W
     UNION ALL
     SELECT student, course, 'registered' AS status FROM Registered);
 
+------------------------------------------------ TRIGGERS ------------------------------------------------
+CREATE FUNCTION register() RETURNS TRIGGER AS $register$
+    DECLARE
+        prereq CURSOR(pre_course TEXT) FOR SELECT requirement FROM Prerequisites WHERE course = pre_course;
+        req TEXT;
+        grade CHAR(1);
+    BEGIN 
+        RAISE NOTICE 'VALUES FROM NEW: student: % ; course: % ; status: %', NEW.student, NEW.course, NEW.status;
+        
+        OPEN prereq(NEW.course);
+        LOOP    
+            FETCH prereq INTO req;
+            EXIT WHEN NOT FOUND;
+            grade := (SELECT Taken.grade FROM Taken WHERE (student, course) = (NEW.student, req));
+            RAISE NOTICE 'GRADE FOR COURSE % IS : %', req, grade;
+            IF grade IS NULL THEN 
+                RAISE EXCEPTION 'Student % does not fulfill the requirements set by Course % : NO RECORD', NEW.student, NEW.course;
+            ELSIF grade = 'U' THEN
+                RAISE NOTICE 'Student % does not fulfill the requirements set by Course % : ', NEW.student, NEW.course;
+                RAISE EXCEPTION ' HAS NOT PASSED COURSE %', req;
+            END IF;
+        END LOOP;
+               
+        RETURN NULL;
+    END;
+$register$ LANGUAGE plpgsql;
+
+CREATE TRIGGER register INSTEAD OF INSERT ON Registrations
+    FOR EACH ROW EXECUTE FUNCTION register();
 
 -- 5
 
@@ -82,4 +111,11 @@ CREATE VIEW PathToGraduation AS (
     FULL OUTER JOIN MathCredits ON ST.student = MathCredits.student
     FULL OUTER JOIN ResearchCredits ON ST.student = ResearchCredits.student
     FULL OUTER JOIN SeminarCourses ON ST.student = SeminarCourses.student
+);
+
+
+-- 7
+
+CREATE VIEW CourseQueuePositions AS (
+    SELECT student, course, ROW_NUMBER() OVER (PARTITION BY course ORDER BY position) as position FROM WaitingList
 );

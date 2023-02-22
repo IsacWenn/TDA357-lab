@@ -1,0 +1,1 @@
+INSERT INTO Registrations VALUES ('4444444444', 'CCC555', 'test');
