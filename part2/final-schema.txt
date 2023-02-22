@@ -60,18 +60,11 @@ Registered(_student_, _course_)
     _student_ -> Students.idnr
     _course_ -> Courses.code
 
-/*
-We did not mark position as a secondary key since we chose to implement it using a TIMESTAMP.
-The reason for chosing TIMESTAMP over SERIAL was that we thought that having waitingList number representing your queue place
-for registring should be course specific instead representing what number out of all students waiting for all courses you are.
-
-By using a TIMESTAMP instead this is easily calculated in backend.
-
-Since it is technically possible, however EXTREMELY unprobable, that somehow two positions are the same the attribute is not UNIQUE.
-*/
 WaitingList(_student_, _course_, position)
     _student_ -> Students.idnr
     _course_ -> Courses.code
+
+    Unique position
 
 Classified(_classification_, _course_)
     _classification_ -> Classifications.name
