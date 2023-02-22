@@ -28,12 +28,16 @@ CREATE FUNCTION register() RETURNS TRIGGER AS $register$
         prereq CURSOR(pre_course TEXT) FOR SELECT requirement FROM Prerequisites WHERE course = pre_course;
         req TEXT;
         grade CHAR(1);
+
+        capacity CURSOR(cap_course TEXT) FOR SELECT capacity FROM LimitedCourses WHERE code = 
     BEGIN 
         RAISE NOTICE 'VALUES FROM NEW: student: % ; course: % ; status: %', NEW.student, NEW.course, NEW.status;
         
+        -- Checks if prerequisites are met : COMPLETED
+
         OPEN prereq(NEW.course);
         LOOP    
-            FETCH prereq INTO req;
+            FETCH NEXT FROM prereq INTO req;
             EXIT WHEN NOT FOUND;
             grade := (SELECT Taken.grade FROM Taken WHERE (student, course) = (NEW.student, req));
             RAISE NOTICE 'GRADE FOR COURSE % IS : %', req, grade;
@@ -44,7 +48,15 @@ CREATE FUNCTION register() RETURNS TRIGGER AS $register$
                 RAISE EXCEPTION ' HAS NOT PASSED COURSE %', req;
             END IF;
         END LOOP;
-               
+        CLOSE prereq;
+        -- DEALLOCATE prereq; ??????
+
+        --  Checks if course capacity allows a registration : 
+        
+        OPEN capacity()
+
+        --  Otherwise add to waiting-list : 
+
         RETURN NULL;
     END;
 $register$ LANGUAGE plpgsql;

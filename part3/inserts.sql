@@ -79,3 +79,4 @@ INSERT INTO ProgramHosts VALUES('Architecture', 'Architecture Animal Association
 INSERT INTO ProgramHosts VALUES('Mechanical Engineering', 'Mechanical Machos');
 
 INSERT INTO Prerequisites VALUES ('CCC555', 'CCC111');
+INSERT INTO Prerequisites VALUES ('CCC555', 'CCC222');
