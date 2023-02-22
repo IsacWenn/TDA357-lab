@@ -62,7 +62,7 @@ Registered(_student_, _course_)
 
 WaitingList(_student_, _course_, position)
     _student_ -> Students.idnr
-    _course_ -> Courses.code
+    _course_ -> LimitedCourses.code
 
     Unique position
 
