@@ -47,7 +47,7 @@ INSERT INTO ProgramMandatoryCourses VALUES ('CCC111','Information Technology');
 INSERT INTO BranchMandatoryCourses VALUES ('CCC333', 'B1', 'Mechanical Machos');
 INSERT INTO BranchMandatoryCourses VALUES ('CCC444', 'B1', 'Mechanical Machos');
 
-INSERT INTO BranchRecommendedCourses VALUES ('CCC222', 'B1', 'Information Technology');
+INSERT INTO BranchRecommendedCourses VALUES ('CCC222', 'B1', 'Mechanical Machos');
 INSERT INTO BranchRecommendedCourses VALUES ('CCC333', 'B1', 'Information Technology');
 
 INSERT INTO Registered VALUES ('1111111111','CCC111');

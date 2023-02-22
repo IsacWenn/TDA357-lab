@@ -69,7 +69,7 @@ CREATE VIEW PathToGraduation AS (
             BasicInformation AS BI LEFT OUTER JOIN RecommendedCourses AS RC ON BI.idnr = RC.student
             LEFT OUTER JOIN Taken AS T ON (RC.student, RC.course) = (T.student, T.course) WHERE grade != 'U' GROUP BY BI.idnr
         )
-
+    
     SELECT ST.student, COALESCE(totalCredits, 0) AS totalCredits, mandatoryLeft, 
     COALESCE(mathCredits, 0) AS mathCredits, COALESCE(researchCredits, 0) AS researchCredits,
     COALESCE(seminarCourses, 0) AS seminarCourses, CASE WHEN (
