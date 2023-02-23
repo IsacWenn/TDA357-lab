@@ -28,8 +28,8 @@ CREATE FUNCTION register() RETURNS TRIGGER AS $register$
         prereq CURSOR(pre_course TEXT) FOR SELECT requirement FROM Prerequisites WHERE course = pre_course;
         req TEXT;
         grade CHAR(1);
-
-        capacity CURSOR(cap_course TEXT) FOR SELECT capacity FROM LimitedCourses WHERE code = 
+        capacity INT;
+        registred_students INT;
     BEGIN 
         RAISE NOTICE 'VALUES FROM NEW: student: % ; course: % ; status: %', NEW.student, NEW.course, NEW.status;
         
@@ -53,9 +53,17 @@ CREATE FUNCTION register() RETURNS TRIGGER AS $register$
 
         --  Checks if course capacity allows a registration : 
         
-        OPEN capacity()
-
-        --  Otherwise add to waiting-list : 
+        capacity := (SELECT capacity FROM LimitedCourses WHERE code = NEW.course);
+        IF capacity IS NULL THEN
+            -- register
+        ELSE THEN
+            registred_students := (SELECT COUNT(student) FROM Registered WHERE course = NEW.course);
+            IF capacity > registred_students THEN
+                -- register
+            ELSE THEN
+                -- waiting list.
+            END IF;
+        END IF;
 
         RETURN NULL;
     END;
