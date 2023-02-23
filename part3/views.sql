@@ -22,6 +22,36 @@ CREATE VIEW Registrations AS (SELECT student, course, 'waiting' AS status FROM W
     UNION ALL
     SELECT student, course, 'registered' AS status FROM Registered);
 
+
+
+------------------------------------------------ FUNCTIONS ------------------------------------------------
+
+CREATE FUNCTION register_student( student TEXT, course TEXT ) RETURNS VOID AS $$ 
+    BEGIN
+        INSERT INTO Registered VALUES (student, course);
+    END;
+$$ LANGUAGE plpgsql;
+
+CREATE FUNCTION add_student_to_waitinglist( student TEXT, course TEXT ) RETURNS VOID AS $$ 
+    BEGIN
+        INSERT INTO WaitingList VALUES (student, course, CURRENT_TIMESTAMP);
+    END;
+$$ LANGUAGE plpgsql;
+
+CREATE FUNCTION check_if_student_has_passed_course( s TEXT, c TEXT ) RETURNS BOOLEAN AS $$ 
+    DECLARE 
+        result BOOLEAN DEFAULT FALSE;
+    BEGIN
+        SELECT grade FROM Taken WHERE (Taken.student, Taken.course) = (s, c);
+        IF grade IN ('3', '4', '5') THEN
+            result := TRUE;
+        ELSE
+            result := FALSE;
+        END IF;
+        RETURN(result);
+    END;
+$$ LANGUAGE plpgsql;
+
 ------------------------------------------------ TRIGGERS ------------------------------------------------
 CREATE FUNCTION register() RETURNS TRIGGER AS $register$
     DECLARE
@@ -51,26 +81,48 @@ CREATE FUNCTION register() RETURNS TRIGGER AS $register$
         CLOSE prereq;
         -- DEALLOCATE prereq; ??????
 
+
+
         --  Checks if course capacity allows a registration : 
         
-        capacity := (SELECT capacity FROM LimitedCourses WHERE code = NEW.course);
+        capacity := (SELECT LimitedCourses.capacity FROM LimitedCourses WHERE code = NEW.course);
         IF capacity IS NULL THEN
-            -- register
-        ELSE THEN
+            PERFORM register_student(NEW.student, NEW.course);
+            RAISE NOTICE 'STUDENT % REGISTRED FOR COURSE %', NEW.student, NEW.course;
+        ELSE
             registred_students := (SELECT COUNT(student) FROM Registered WHERE course = NEW.course);
             IF capacity > registred_students THEN
-                -- register
-            ELSE THEN
-                -- waiting list.
+                PERFORM register_student(NEW.student, NEW.course);
+                RAISE NOTICE 'STUDENT % REGISTRED FOR LIMITED COURSE %', NEW.student, NEW.course;
+            ELSE
+                PERFORM add_student_to_waitinglist(NEW.student, NEW.course);
+                RAISE NOTICE 'STUDENT % ADDED TO WAITING LIST FOR COURSE %', NEW.student, NEW.course;
             END IF; 
         END IF;
+
+
 
         RETURN NULL;
     END;
 $register$ LANGUAGE plpgsql;
 
-CREATE TRIGGER register INSTEAD OF INSERT ON Registrations
-    FOR EACH ROW EXECUTE FUNCTION register();
+
+
+CREATE FUNCTION test() RETURNS TRIGGER AS $test$
+    DECLARE
+        test1 BOOLEAN;
+    BEGIN
+        test1 := (SELECT * FROM check_if_student_has_passed_course('5555555555', 'CCC111'));
+        IF test1 IS TRUE THEN
+            RAISE NOTICE 'HURR DURR';
+        END IF;
+        RAISE NOTICE 'check is : %', test1;
+    END;
+
+$test$ LANGUAGE plpgsql;
+
+CREATE TRIGGER test INSTEAD OF INSERT ON Registrations
+    FOR EACH ROW EXECUTE FUNCTION test();
 
 -- 5
 
