@@ -62,7 +62,7 @@ CREATE FUNCTION register() RETURNS TRIGGER AS $register$
                 -- register
             ELSE THEN
                 -- waiting list.
-            END IF;
+            END IF; 
         END IF;
 
         RETURN NULL;
