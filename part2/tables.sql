@@ -109,10 +109,11 @@ CREATE TABLE Registered(
 CREATE TABLE WaitingList(
     student TEXT NOT NULL,
     course CHAR(6) NOT NULL,
-    position TIMESTAMP UNIQUE NOT NULL,
+    position TIMESTAMP NOT NULL,
     PRIMARY KEY(student, course),
     FOREIGN KEY (student) REFERENCES Students,
-    FOREIGN KEY (course) REFERENCES LimitedCourses
+    FOREIGN KEY (course) REFERENCES LimitedCourses,
+    UNIQUE (position, course)
 );
 
 CREATE TABLE Classified(
