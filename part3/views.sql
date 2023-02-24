@@ -41,14 +41,16 @@ $$ LANGUAGE plpgsql;
 CREATE FUNCTION check_if_student_has_passed_course( s TEXT, c TEXT ) RETURNS BOOLEAN AS $$ 
     DECLARE 
         result BOOLEAN DEFAULT FALSE;
+        grade CHAR(1);
     BEGIN
-        SELECT grade FROM Taken WHERE (Taken.student, Taken.course) = (s, c);
+        grade := (SELECT Taken.grade FROM Taken WHERE (Taken.student, Taken.course) = (s, c));
         IF grade IN ('3', '4', '5') THEN
             result := TRUE;
         ELSE
             result := FALSE;
         END IF;
-        RETURN(result);
+        RAISE NOTICE 'RESULT IS : %', result;
+        RETURN result;
     END;
 $$ LANGUAGE plpgsql;
 
@@ -117,6 +119,7 @@ CREATE FUNCTION test() RETURNS TRIGGER AS $test$
             RAISE NOTICE 'HURR DURR';
         END IF;
         RAISE NOTICE 'check is : %', test1;
+        RETURN NULL;
     END;
 
 $test$ LANGUAGE plpgsql;
