@@ -64,7 +64,7 @@ WaitingList(_student_, _course_, position)
     _student_ -> Students.idnr
     _course_ -> LimitedCourses.code
 
-    Unique position
+    Unique (position, course)
 
 Classified(_classification_, _course_)
     _classification_ -> Classifications.name
