@@ -23,9 +23,16 @@ INSERT INTO Courses VALUES ('CCC222','C2',20,'Computer Science');
 INSERT INTO Courses VALUES ('CCC333','C3',30,'Architecture');
 INSERT INTO Courses VALUES ('CCC444','C4',60,'Mechanical Engineering');
 INSERT INTO Courses VALUES ('CCC555','C5',50,'Mechanical Engineering');
+INSERT INTO Courses VALUES ('TTT111','TEST1',42,'Computer Science');
+INSERT INTO Courses VALUES ('TTT222','TEST2',42,'Computer Science');
+INSERT INTO Courses VALUES ('TTT333','TEST3',42,'Computer Science');
+INSERT INTO Courses VALUES ('TTT444','TEST4',42,'Computer Science');
 
 INSERT INTO LimitedCourses VALUES ('CCC222',1);
-INSERT INTO LimitedCourses VALUES ('CCC333',2);
+INSERT INTO LimitedCourses VALUES ('CCC333',3);
+INSERT INTO LimitedCourses VALUES ('TTT222', 1);
+INSERT INTO LimitedCourses VALUES ('TTT333', 5);
+INSERT INTO LimitedCourses VALUES ('TTT444', 1);
 
 INSERT INTO Classifications VALUES ('math');
 INSERT INTO Classifications VALUES ('research');
@@ -35,7 +42,6 @@ INSERT INTO Classified VALUES ('CCC333','math');
 INSERT INTO Classified VALUES ('CCC444','math');
 INSERT INTO Classified VALUES ('CCC444','research');
 INSERT INTO Classified VALUES ('CCC444','seminar');
-
 
 INSERT INTO StudentBranches VALUES ('2222222222','B1','Information Technology');
 INSERT INTO StudentBranches VALUES ('3333333333','B2','Data Dudes');
@@ -56,6 +62,10 @@ INSERT INTO Registered VALUES ('1111111111','CCC333');
 INSERT INTO Registered VALUES ('2222222222','CCC222');
 INSERT INTO Registered VALUES ('5555555555','CCC222');
 INSERT INTO Registered VALUES ('5555555555','CCC333');
+INSERT INTO Registered VALUES ('3333333333','TTT333');
+INSERT INTO Registered VALUES ('1111111111','TTT444');
+INSERT INTO Registered VALUES ('2222222222','TTT444');
+INSERT INTO Registered VALUES ('5555555555','TTT444');
 
 INSERT INTO Taken VALUES('4444444444','CCC111','5');
 INSERT INTO Taken VALUES('4444444444','CCC222','5');
@@ -73,6 +83,8 @@ INSERT INTO Taken VALUES('2222222222','CCC444','U');
 INSERT INTO WaitingList VALUES('3333333333','CCC222', CURRENT_TIMESTAMP);
 INSERT INTO WaitingList VALUES('3333333333','CCC333', CURRENT_TIMESTAMP);
 INSERT INTO WaitingList VALUES('2222222222','CCC333', CURRENT_TIMESTAMP);
+INSERT INTO WaitingList VALUES('3333333333','TTT444', CURRENT_TIMESTAMP);
+INSERT INTO WaitingList VALUES('2222222222','TTT222', CURRENT_TIMESTAMP);
 
 INSERT INTO ProgramHosts VALUES('Computer Science', 'Information Technology');
 INSERT INTO ProgramHosts VALUES('Architecture', 'Architecture Animal Association');

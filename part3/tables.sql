@@ -112,7 +112,8 @@ CREATE TABLE WaitingList(
     position TIMESTAMP NOT NULL,
     PRIMARY KEY(student, course),
     FOREIGN KEY (student) REFERENCES Students,
-    FOREIGN KEY (course) REFERENCES LimitedCourses
+    FOREIGN KEY (course) REFERENCES LimitedCourses,
+    UNIQUE (position, course)
 );
 
 CREATE TABLE Classified(
