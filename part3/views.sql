@@ -51,7 +51,7 @@ CREATE FUNCTION check_if_student_has_passed_course( s TEXT, c TEXT ) RETURNS BOO
         END IF;
         RAISE NOTICE 'RESULT IS : %', result;
         RETURN result;
-    END;
+    END;    
 $$ LANGUAGE plpgsql;
 
 ------------------------------------------------ TRIGGERS ------------------------------------------------
@@ -112,7 +112,7 @@ $register$ LANGUAGE plpgsql;
 
 CREATE TRIGGER register INSTEAD OF INSERT ON Registrations
     FOR EACH ROW EXECUTE FUNCTION register();
-/*
+
 */
 
 CREATE FUNCTION test() RETURNS TRIGGER AS $test$
@@ -130,13 +130,11 @@ CREATE FUNCTION test() RETURNS TRIGGER AS $test$
 $test$ LANGUAGE plpgsql;
 
 
--- /*    UNCOMMENT TO DEACTIVATE TEST FUNCTION
+--   UNCOMMENT TO DEACTIVATE TEST FUNCTION
 
 CREATE TRIGGER test INSTEAD OF INSERT ON Registrations
     FOR EACH ROW EXECUTE FUNCTION test();
 
-/*
-*/
 -- 5
 
 CREATE VIEW UnreadMandatory AS (
