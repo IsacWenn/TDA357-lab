@@ -80,9 +80,9 @@ $$ LANGUAGE plpgsql;
 ------------------------------------------------ TRIGGERS ------------------------------------------------
 CREATE FUNCTION register() RETURNS TRIGGER AS $register$
     DECLARE
-        prereq CURSOR(pre_course TEXT) FOR SELECT requirement FROM Prerequisites WHERE course = pre_course;
-        req TEXT;
         grade CHAR(1);
+
+        prereq_alt1 TEXT[];
     BEGIN         
         -- Checks if student is already registred or on waitinglist : COMPLETED
 
@@ -92,19 +92,11 @@ CREATE FUNCTION register() RETURNS TRIGGER AS $register$
 
         -- Checks if prerequisites are met : COMPLETED
 
-        OPEN prereq(NEW.course);
-        LOOP    
-            FETCH NEXT FROM prereq INTO req;
-            EXIT WHEN NOT FOUND;
-            grade := (SELECT Taken.grade FROM Taken WHERE (student, course) = (NEW.student, req));
-            IF grade IS NULL THEN 
-                RAISE EXCEPTION 'Student % does not fulfill the requirements set by Course % : NO RECORD', NEW.student, NEW.course;
-            ELSIF grade = 'U' THEN
-                RAISE NOTICE 'Student % does not fulfill the requirements set by Course % : ', NEW.student, NEW.course;
-                RAISE EXCEPTION ' HAS NOT PASSED COURSE %', req;
-            END IF;
-        END LOOP;
-        CLOSE prereq;
+        IF (SELECT COUNT(c) FROM (SELECT requirement AS c FROM Prerequisites AS PR WHERE PR.course = NEW.course 
+                                 EXCEPT
+                                 SELECT course FROM PassedCourses AS PC WHERE PC.student = NEW.student) AS foo) != 0 THEN
+            RAISE EXCEPTION 'Student % does not fulfill the requirements set by Course %', NEW.student, NEW.course;
+        END IF;
 
         -- Checks if student has already taken course : COMPLETED
 
