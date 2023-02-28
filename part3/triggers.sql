@@ -1,7 +1,7 @@
 ------------------------------------------------ VIEW ------------------------------------------------
 
 CREATE VIEW CourseQueuePositions AS (
-    SELECT student, course, ROW_NUMBER() OVER (PARTITION BY course ORDER BY position) as position FROM WaitingList
+    SELECT student, course, ROW_NUMBER() OVER (PARTITION BY course ORDER BY position) as place FROM WaitingList
 );
 
 ------------------------------------------------ FUNCTIONS ------------------------------------------------
@@ -106,6 +106,12 @@ CREATE FUNCTION register() RETURNS TRIGGER AS $register$
         END LOOP;
         CLOSE prereq;
         -- DEALLOCATE prereq; ??????
+
+        -- Checks if student has already taken course
+
+        IF (SELECT T.grade FROM Taken AS T WHERE (T.student, T.course) = (NEW.student, NEW.course)) IN ('3', '4', '5') THEN 
+            RAISE EXCEPTION 'Student % has already passed course %', NEW.student, NEW.course;
+        END IF;
 
         --  Checks if course capacity allows a registration : COMPLETED
 
