@@ -105,9 +105,8 @@ CREATE FUNCTION register() RETURNS TRIGGER AS $register$
             END IF;
         END LOOP;
         CLOSE prereq;
-        -- DEALLOCATE prereq; ??????
 
-        -- Checks if student has already taken course
+        -- Checks if student has already taken course : COMPLETED
 
         IF (SELECT T.grade FROM Taken AS T WHERE (T.student, T.course) = (NEW.student, NEW.course)) IN ('3', '4', '5') THEN 
             RAISE EXCEPTION 'Student % has already passed course %', NEW.student, NEW.course;
