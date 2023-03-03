@@ -112,7 +112,7 @@ CREATE FUNCTION register() RETURNS TRIGGER AS $register$
             PERFORM add_student_to_waitinglist(NEW.student, NEW.course);
         END IF;
 
-        RETURN NULL;
+        RETURN NEW;
     END;
 $register$ LANGUAGE plpgsql;
 
@@ -134,7 +134,7 @@ CREATE FUNCTION unregister() RETURNS TRIGGER AS $unregister$
             PERFORM remove_student_from_waitinglist( first_student, OLD.course );
         END IF;
 
-        RETURN NULL;
+        RETURN OLD;
     END;
 $unregister$ LANGUAGE plpgsql;
 

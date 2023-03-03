@@ -51,11 +51,14 @@ public class PortalConnection {
     // Unregister a student from a course, returns a tiny JSON document (as a String)
     public String unregister(String student, String courseCode){
         try (PreparedStatement ps = conn.prepareStatement(
-                "DELETE FROM Registrations WHERE student=? AND course=?");) {
+                "DELETE FROM Registrations WHERE student=? AND course=?")) {
             ps.setString(1, student);
             ps.setString(2, courseCode);
-            ps.executeUpdate();
-            return "{\"success\":true}";
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows == 0)
+                return "{\"success\":false, \"error\":\"zero rows has been deleted\"}";
+            else
+                return "{\"success\":true}";
         } catch (SQLException e) {
             return "{\"success\":false, \"error\":\""+getError(e)+"\"}";
         }
