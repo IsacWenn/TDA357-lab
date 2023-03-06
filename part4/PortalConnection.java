@@ -1,5 +1,9 @@
 
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
 import java.sql.*; // JDBC stuff.
+import java.util.Map;
 import java.util.Properties;
 
 public class PortalConnection {
@@ -22,7 +26,7 @@ public class PortalConnection {
     private Connection conn;
 
     public PortalConnection() throws SQLException, ClassNotFoundException {
-        this(DATABASE, USERNAME, PASSWORD);  
+        this(DATABASE, USERNAME, PASSWORD);
     }
 
     // Initializes the connection, no need to change anything here
@@ -66,25 +70,58 @@ public class PortalConnection {
 
     // Return a JSON document containing lots of information about a student, it should validate against the schema found in information_schema.json
     public String getInfo(String student) throws SQLException{
-        
+
+        JSONObject info = new JSONObject();
+
         try(PreparedStatement st = conn.prepareStatement(
             // replace this with something more useful
-            "SELECT jsonb_build_object('student',idnr,'name',name) AS jsondata FROM BasicInformation WHERE idnr=?"
-            );){
-            
+            "SELECT jsonb_build_object('student',idnr,'name',name,'login',login,'program',program,'branch',branch)" +
+                    " AS jsondata FROM BasicInformation WHERE idnr=?"
+            )){
+
             st.setString(1, student);
-            
             ResultSet rs = st.executeQuery();
-            
-            if(rs.next())
-              return rs.getString("jsondata");
-            else
-              return "{\"student\":\"does not exist :(\"}"; 
-            
-        } 
+
+            if(!rs.next())
+              return "{\"student\":\"does not exist :(\"}";
+
+            JSONObject result = new JSONObject(new JSONTokener(rs.getString("jsondata")));
+
+            for(String key : JSONObject.getNames(result))
+                info.put(key, result.get(key));
+        } catch (SQLException e) {
+            return "{\"success\":false, \"error\":\""+getError(e)+"\"}";
+        }
+
+        try(PreparedStatement f = conn.prepareStatement(
+                "SELECT jsonb_build_object('code',course,'grade',grade) AS jsondata" +
+                        " FROM Taken WHERE student=?"
+            );
+            PreparedStatement c = conn.prepareStatement(
+                "SELECT jsonb_build_object('name',name,'code',code,'credits',credits) AS jsondata FROM Courses"
+            );
+            PreparedStatement r = conn.prepareStatement(
+                "SELECT jsonb_build_object('course',course,'place',place) AS jsondata " +
+                        "FROM CourseQueuePositions WHERE student=?"
+            );
+        ){
+            f.setString(1, student);
+            ResultSet finished = f.executeQuery();
+
+            ResultSet course = c.executeQuery();
+
+            r.setString(1, student);
+            ResultSet registred = r.executeQuery();
+        }
+
+
+        return info.toString();
     }
 
+
+
     // This is a hack to turn an SQLException into a JSON string error message. No need to change.
+
     public static String getError(SQLException e){
        String message = e.getMessage();
        int ix = message.indexOf('\n');
@@ -92,4 +129,5 @@ public class PortalConnection {
        message = message.replace("\"","\\\"");
        return message;
     }
+
 }
