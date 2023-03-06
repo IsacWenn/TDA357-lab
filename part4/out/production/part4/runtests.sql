@@ -36,4 +36,7 @@ SELECT student, totalCredits, mandatoryLeft, mathCredits, researchCredits, semin
 -- Life-hack: When working on a new view you can write it as a query here (without creating a view) and when it works just add CREATE VIEW and put it in views.sql
 */
 
+SELECT * FROM CourseQueuePositions;
 SELECT * FROM Registrations;
+
+SELECT R.course, status, 0 AS position FROM (SELECT course, status FROM Registrations WHERE student='2222222222') AS R;

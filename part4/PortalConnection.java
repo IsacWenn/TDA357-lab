@@ -1,9 +1,12 @@
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import java.sql.*; // JDBC stuff.
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 
 public class PortalConnection {
@@ -97,28 +100,75 @@ public class PortalConnection {
                 "SELECT jsonb_build_object('code',course,'grade',grade) AS jsondata" +
                         " FROM Taken WHERE student=?"
             );
-            PreparedStatement c = conn.prepareStatement(
-                "SELECT jsonb_build_object('name',name,'code',code,'credits',credits) AS jsondata FROM Courses"
-            );
             PreparedStatement r = conn.prepareStatement(
-                "SELECT jsonb_build_object('course',course,'place',place) AS jsondata " +
-                        "FROM CourseQueuePositions WHERE student=?"
+                    "SELECT jsonb_build_object('code',course,'status',status) AS jsondata" +
+                            " FROM Registrations WHERE student=?"
+            );
+            PreparedStatement cqp = conn.prepareStatement(
+                    "SELECT jsonb_build_object('code',course,'position',place) AS jsondata " +
+                            "FROM CourseQueuePositions WHERE student=?"
             );
         ){
             f.setString(1, student);
             ResultSet finished = f.executeQuery();
 
-            ResultSet course = c.executeQuery();
-
             r.setString(1, student);
-            ResultSet registred = r.executeQuery();
+            ResultSet registered = r.executeQuery();
+
+            cqp.setString(1, student);
+            ResultSet coursePositions = r.executeQuery();
+
+            JSONObject courses = coursesToMap();
+
+            JSONArray finished_courses = new JSONArray();
+
+            while (finished.next()) {
+                JSONObject course = new JSONObject(new JSONTokener(finished.getString("jsondata")));
+                JSONObject course_info = (JSONObject) courses.get((String) course.get("code"));
+                course.put("name", course_info.get("name"));
+                course.put("credits", course_info.get("credits"));
+                finished_courses.put(course);
+            }
+            info.put("finished", finished_courses);
+
+            JSONArray registered_courses = new JSONArray();
+            coursePositions.next();
+
+            while (registered.next()) {
+                JSONObject course = new JSONObject(new JSONTokener(registered.getString("jsondata")));
+                JSONObject course_info = (JSONObject) courses.get((String) course.get("code"));
+                course.put("name", course_info.get("name"));
+                if (Objects.equals((String) course.get("status"), "waiting")) {
+                    
+                } else
+                    course.put("position", 0);
+                System.out.println(course.toString());
+            }
         }
 
 
         return info.toString();
     }
 
+    private JSONObject coursesToMap() {
+        JSONObject courses = new JSONObject();
+        try(PreparedStatement c = conn.prepareStatement(
+                "SELECT jsonb_build_object('name',name,'code',code,'credits',credits) AS jsondata FROM Courses"
+        )){
+            ResultSet courses_ = c.executeQuery();
 
+            while(courses_.next()){
+                JSONObject result = new JSONObject(new JSONTokener(courses_.getString("jsondata")));
+                JSONObject course = new JSONObject();
+                course.put("name", result.get("name"));
+                course.put("credits", result.get("credits"));
+                courses.put((String) result.get("code"), course);
+            }
+        } catch (SQLException e) {
+            System.out.println("buu");
+        }
+        return courses;
+    }
 
     // This is a hack to turn an SQLException into a JSON string error message. No need to change.
 
