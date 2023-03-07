@@ -39,4 +39,9 @@ SELECT student, totalCredits, mandatoryLeft, mathCredits, researchCredits, semin
 SELECT * FROM CourseQueuePositions;
 SELECT * FROM Registrations;
 
-SELECT R.course, status, 0 AS position FROM (SELECT course, status FROM Registrations WHERE student='2222222222') AS R;
+--SELECT R.course, status, 0 AS position FROM (SELECT course, status FROM Registrations WHERE student='2222222222') AS R;
+
+
+SELECT Courses.name, Courses.code--, status, place
+    FROM Courses LEFT OUTER JOIN Registrations ON
+    Courses.code = Registrations.course AND student = '2222222222';

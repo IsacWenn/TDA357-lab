@@ -97,27 +97,17 @@ public class PortalConnection {
         }
 
         try(PreparedStatement f = conn.prepareStatement(
-                "SELECT jsonb_build_object('code',course,'grade',grade) AS jsondata" +
-                        " FROM Taken WHERE student=?"
-            );
-            PreparedStatement r = conn.prepareStatement(
-                    "SELECT jsonb_build_object('code',course,'status',status) AS jsondata" +
-                            " FROM Registrations WHERE student=?"
-            );
-            PreparedStatement cqp = conn.prepareStatement(
-                    "SELECT jsonb_build_object('code',course,'position',place) AS jsondata " +
-                            "FROM CourseQueuePositions WHERE student=?"
-            );
-        ){
+                "SELECT Courses.name, Courses.code, status, place" +
+                        "FROM Courses LEFT OUTER JOIN Registrations ON" +
+                        "Courses.code = Registrations.course AND student = ?" //+
+                        //"RIGHT OUTER JOIN CourseQueuePosition ON" +
+                        //"Registrations.student = CourseQueuePositions.student" +
+                        //"AND Registrations.course = CourseQueuePositions.course"
+            )){
             f.setString(1, student);
             ResultSet finished = f.executeQuery();
 
-            r.setString(1, student);
-            ResultSet registered = r.executeQuery();
-
-            cqp.setString(1, student);
-            ResultSet coursePositions = r.executeQuery();
-
+            System.out.println(finished);
             JSONObject courses = coursesToMap();
 
             JSONArray finished_courses = new JSONArray();
@@ -131,19 +121,6 @@ public class PortalConnection {
             }
             info.put("finished", finished_courses);
 
-            JSONArray registered_courses = new JSONArray();
-            coursePositions.next();
-
-            while (registered.next()) {
-                JSONObject course = new JSONObject(new JSONTokener(registered.getString("jsondata")));
-                JSONObject course_info = (JSONObject) courses.get((String) course.get("code"));
-                course.put("name", course_info.get("name"));
-                if (Objects.equals((String) course.get("status"), "waiting")) {
-                    
-                } else
-                    course.put("position", 0);
-                System.out.println(course.toString());
-            }
         }
 
 

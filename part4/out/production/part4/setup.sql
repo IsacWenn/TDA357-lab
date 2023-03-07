@@ -322,3 +322,4 @@ CREATE VIEW PathToGraduation AS (
     FULL OUTER JOIN ResearchCredits ON ST.student = ResearchCredits.student
     FULL OUTER JOIN SeminarCourses ON ST.student = SeminarCourses.student
 );
+
