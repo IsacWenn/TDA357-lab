@@ -3,7 +3,7 @@
 CREATE VIEW CourseQueuePositions AS (
     SELECT student, course, ROW_NUMBER() OVER (PARTITION BY course ORDER BY position) as place FROM WaitingList
 );
-
+     
 ------------------------------------------------ FUNCTIONS ------------------------------------------------
 
 CREATE FUNCTION register_student( student TEXT, course TEXT ) RETURNS VOID AS $$ 

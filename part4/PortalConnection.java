@@ -104,10 +104,6 @@ public class PortalConnection {
                     "SELECT jsonb_build_object('code',course,'status',status) AS jsondata" +
                             " FROM Registrations WHERE student=?"
             );
-            PreparedStatement cqp = conn.prepareStatement(
-                    "SELECT jsonb_build_object('code',course,'position',place) AS jsondata " +
-                            "FROM CourseQueuePositions WHERE student=?"
-            );
         ){
             f.setString(1, student);
             ResultSet finished = f.executeQuery();
@@ -115,8 +111,6 @@ public class PortalConnection {
             r.setString(1, student);
             ResultSet registered = r.executeQuery();
 
-            cqp.setString(1, student);
-            ResultSet coursePositions = r.executeQuery();
 
             JSONObject courses = coursesToMap();
 
@@ -125,29 +119,65 @@ public class PortalConnection {
             while (finished.next()) {
                 JSONObject course = new JSONObject(new JSONTokener(finished.getString("jsondata")));
                 JSONObject course_info = (JSONObject) courses.get((String) course.get("code"));
-                course.put("name", course_info.get("name"));
+                course.put("course", course_info.get("name"));
                 course.put("credits", course_info.get("credits"));
                 finished_courses.put(course);
             }
             info.put("finished", finished_courses);
 
             JSONArray registered_courses = new JSONArray();
-            coursePositions.next();
+
+            JSONObject coursePositions = coursePositionsToMap(student);
 
             while (registered.next()) {
                 JSONObject course = new JSONObject(new JSONTokener(registered.getString("jsondata")));
                 JSONObject course_info = (JSONObject) courses.get((String) course.get("code"));
-                course.put("name", course_info.get("name"));
+                course.put("course", course_info.get("name"));
                 if (Objects.equals((String) course.get("status"), "waiting")) {
-                    
-                } else
-                    course.put("position", 0);
-                System.out.println(course.toString());
+                    course.put("position",((JSONObject) coursePositions.get(
+                            (String) course.get("code"))).get("position"));
+                }
+                registered_courses.put(course);
             }
+
+            info.put("registered", registered_courses);
         }
 
+        try (PreparedStatement p = conn.prepareStatement(
+                "SELECT jsonb_build_object('seminarCourses',seminarCourses,'mathCredits',mathCredits," +
+                        "'researchCredits',researchCredits,'totalCredits',totalCredits,'canGraduate',qualified) AS " +
+                        "jsondata FROM PathToGraduation WHERE student=?"
+        )){
+            p.setString(1, student);
+            ResultSet path = p.executeQuery();
+            path.next();
+            JSONObject result = new JSONObject(new JSONTokener(path.getString("jsondata")));
+
+            for (String key : JSONObject.getNames(result))
+                info.put(key, result.get(key));
+        }
 
         return info.toString();
+    }
+
+    private JSONObject coursePositionsToMap(String student) {
+        JSONObject coursePositions = new JSONObject();
+        try (PreparedStatement cqp = conn.prepareStatement(
+                "SELECT jsonb_build_object('code',course,'position',place) AS jsondata " +
+                        "FROM CourseQueuePositions WHERE student=?")){
+            cqp.setString(1, student);
+            ResultSet coursePositions_ = cqp.executeQuery();
+
+            while (coursePositions_.next()){
+                JSONObject result = new JSONObject(new JSONTokener(coursePositions_.getString("jsondata")));
+                JSONObject position = new JSONObject();
+                position.put("position", result.get("position"));
+                coursePositions.put((String) result.get("code"), position);
+            }
+        } catch (SQLException e) {
+            System.out.println("ERROR in coursePositionsToMap");
+        }
+        return coursePositions;
     }
 
     private JSONObject coursesToMap() {
@@ -165,7 +195,7 @@ public class PortalConnection {
                 courses.put((String) result.get("code"), course);
             }
         } catch (SQLException e) {
-            System.out.println("buu");
+            System.out.println("Error in coursesToMap");
         }
         return courses;
     }
