@@ -128,7 +128,7 @@ CREATE FUNCTION unregister() RETURNS TRIGGER AS $unregister$
             FETCH FROM waiting_students INTO first_student;
             CLOSE waiting_students;
             IF first_student IS NULL THEN 
-                RETURN NULL;
+                RETURN OLD;
             END IF;
             PERFORM register_student( first_student, OLD.course );
             PERFORM remove_student_from_waitinglist( first_student, OLD.course );
