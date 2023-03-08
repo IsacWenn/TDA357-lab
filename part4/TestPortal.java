@@ -7,28 +7,99 @@ public class TestPortal {
 
    public static void main(String[] args) {
       try{
-         PortalConnection c = new PortalConnection();
-   
-         // Write your tests here. Add/remove calls to pause() as desired. 
-         // Use println instead of prettyPrint to get more compact output (if your raw JSON is already readable)
-   
-         //System.out.println(c.unregister("2222222222", "CCC333"));
-         //pause();
+          PortalConnection c = new PortalConnection();
 
-         //System.out.println(c.unregister("1111111111","TTT111"));
-         //pause();
-          //System.out.println(c.getInfo("2222222222"));
-          prettyPrint(c.getInfo("4444444444"));
-         //pause();
+          // Write your tests here. Add/remove calls to pause() as desired.
+          // Use println instead of prettyPrint to get more compact output (if your raw JSON is already readable)
 
-         //System.out.println(c.register("5555555555", "TTT111"));
-         //pause();
+          // TEST 1: PRINT INFO OF STUDENT.
+          System.out.println("############################# TEST 1 #############################");
+          System.out.println("PRINT INFO OF STUDENT.");
+          prettyPrint(c.getInfo("2222222222"));
+          pause();
 
-         // prettyPrint(c.getInfo("2222222222"));
+          // TEST 2: REGISTER STUDENT TO AN UNLIMITED COURSE AND CHECK BY PRINTING.
+          scuffedCLS();
+          System.out.println("############################# TEST 2 #############################");
+          System.out.println("REGISTER STUDENT TO AN UNLIMITED COURSE AND CHECK BY PRINTING.");
+          System.out.println(c.register("2222222222", "TTT111"));
+          prettyPrint(c.getInfo("2222222222"));
+          pause();
 
+          // TEST 3: REGISTER THE SAME STUDENT AGAIN AND CHECK THE ERROR RESPONSE.
+          scuffedCLS();
+          System.out.println("############################# TEST 3 #############################");
+          System.out.println("REGISTER THE SAME STUDENT AGAIN AND CHECK THE ERROR RESPONSE.");
+          System.out.println(c.register("2222222222", "TTT111"));
+          pause();
 
+          // TEST 4: UNREGISTER A STUDENT FROM A COURSE TWICE AND CHECK THAT THE STUDENT NO LONGER IS REGISTERED
+          //         TO THAT COURSE AND THAT THE ERROR RESPONSE WORKS.
+          scuffedCLS();
+          System.out.println("############################# TEST 4 #############################");
+          System.out.println("UNREGISTER A STUDENT FROM A COURSE TWICE AND CHECK THAT THE STUDENT NO LONGER IS REGISTERED");
+          System.out.println("TO THAT COURSE AND THAT THE ERROR RESPONSE WORKS.");
+          System.out.println(c.unregister("2222222222", "'TTT111'"));
+          System.out.println(c.unregister("2222222222", "'TTT111'"));
+          prettyPrint(c.getInfo("2222222222"));
+          pause();
 
-      
+          // TEST 5: REGISTER A STUDENT FOR A COURSE THEY HAVE NOT FULFILLED THE REQUIREMENTS FOR.
+          scuffedCLS();
+          System.out.println("############################# TEST 5 #############################");
+          System.out.println("REGISTER A STUDENT FOR A COURSE THEY HAVE NOT FULFILLED THE REQUIREMENTS FOR. ");
+          System.out.println(c.register("5555555555", "CCC555"));
+          System.out.println("Student 5555555555 has been registered to course CCC555");
+          pause();
+
+          // TEST 6: UNREGISTER A STUDENT FROM A LIMITED COURSE THAT THEY ARE ALREADY REGISTERED TO AND HAS AT LEAST
+          //         TWO OTHER STUDENTS IN THE WAITING QUEUE. THEN REGISTER THE SAME STUDENT ONCE AGAIN AND CHECK THAT
+          //         THEY GET THE CORRECT LAST POSITION IN THE WAITINGLIST.
+          scuffedCLS();
+          System.out.println("############################# TEST 6 #############################");
+          System.out.println("UNREGISTER A STUDENT FROM A LIMITED COURSE THAT THEY ARE ALREADY REGISTERED TO AND HAS AT LEAST");
+          System.out.println("TWO OTHER STUDENTS IN THE WAITING QUEUE. THEN REGISTER THE SAME STUDENT ONCE AGAIN AND CHECK THAT");
+          System.out.println("THEY GET THE CORRECT LAST POSITION IN THE WAITINGLIST.");
+          System.out.println(c.unregister("1111111111", "'TTT555'"));
+          System.out.println(c.register("1111111111", "TTT555"));
+          prettyPrint(c.getInfo("1111111111"));
+          pause();
+
+          // TEST 7: UNREGISTER AND REGISTER THE SAME STUDENT FOR THE SAME LIMITED COURSE AND CHECK THAT THE STUDENT IS
+          //         FIRST REMOVED AND THEN ENDS UP IN THE SAME POSITION AS BEFORE.
+          scuffedCLS();
+          System.out.println("############################# TEST 7 #############################");
+          System.out.println("UNREGISTER AND REGISTER THE SAME STUDENT FOR THE SAME LIMITED COURSE AND CHECK THAT THE STUDENT IS");
+          System.out.println("FIRST REMOVED AND THEN ENDS UP IN THE SAME POSITION AS BEFORE.");
+          System.out.println(c.unregister("1111111111", "'TTT555'"));
+          prettyPrint(c.getInfo("1111111111"));
+          System.out.println(c.register("1111111111", "TTT555"));
+          prettyPrint(c.getInfo("1111111111"));
+          pause();
+
+          // TEST 8: UNREGISTER A STUDENT FROM AN OVERFULL COURSE AND CHECK THAT NO STUDENT
+          //         WAS REMOVED FROM THE QUEUE AND THEN REGISTERED TO THE COURSE.
+          scuffedCLS();
+          System.out.println("############################# TEST 8 #############################");
+          System.out.println("UNREGISTER A STUDENT FROM AN OVERFULL COURSE AND CHECK THAT NO STUDENT");
+          System.out.println("WAS REMOVED FROM THE QUEUE AND THEN REGISTERED TO THE COURSE.");
+          System.out.println("\n Student 3333333333 is in the first place in the  waiting-list for course" +
+                  "\n TTT444 and that course is overfull. We will remove student 2222222222 from the course and " +
+                  "\n check that 3333333333 is still in the same place in the queue." +
+                  "\n ");
+          prettyPrint(c.getInfo("3333333333"));
+          System.out.println(c.unregister("2222222222", "'TTT444'"));
+          prettyPrint(c.getInfo("3333333333"));
+          pause();
+
+          // TEST 9: UNREGISTER WITH THE SQL INJECTION CAUSING ALL (OR ALMOST ALL) REGISTRATIONS TO DISAPPEAR.
+          scuffedCLS();
+          System.out.println("############################# TEST 9 #############################");
+          System.out.println("UNREGISTER WITH THE SQL INJECTION CAUSING ALL (OR ALMOST ALL) REGISTRATIONS TO DISAPPEAR.");
+          System.out.println(c.unregister("5555555555", "'CCC222') OR (1=1"));
+          prettyPrint(c.getInfo("5555555555"));
+          pause();
+
       } catch (ClassNotFoundException e) {
          System.err.println("ERROR!\nYou do not have the Postgres JDBC driver (e.g. postgresql-42.5.1.jar) in your runtime classpath!");
       } catch (Exception e) {
@@ -78,5 +149,11 @@ public class TestPortal {
      System.out.println();
      for(int i = 0; i < indent; i++)
        System.out.print(" ");
-   }   
+   }
+
+   private static void scuffedCLS(){
+       System.out.println(
+               "\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+       );
+   }
 }

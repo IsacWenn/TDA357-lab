@@ -58,9 +58,9 @@ public class PortalConnection {
     // Unregister a student from a course, returns a tiny JSON document (as a String)
     public String unregister(String student, String courseCode){
         try (PreparedStatement ps = conn.prepareStatement(
-                "DELETE FROM Registrations WHERE student=? AND course=?")) {
-            ps.setString(1, student);
-            ps.setString(2, courseCode);
+                "DELETE FROM Registrations WHERE (student=? AND course=" + courseCode + ");")) {
+            ps.setString(1, student); // SQL Injection safe. String concatenation is not safe though.
+            System.out.println(ps);
             int affectedRows = ps.executeUpdate();
             if (affectedRows == 0)
                 return "{\"success\":false, \"error\":\"zero rows has been deleted\"}";
