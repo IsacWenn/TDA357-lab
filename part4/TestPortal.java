@@ -96,7 +96,7 @@ public class TestPortal {
           scuffedCLS();
           System.out.println("############################# TEST 9 #############################");
           System.out.println("UNREGISTER WITH THE SQL INJECTION CAUSING ALL (OR ALMOST ALL) REGISTRATIONS TO DISAPPEAR.");
-          System.out.println(c.unregister("5555555555", "'CCC222') OR (1=1"));
+          System.out.println(c.unregister("5555555555", "CCC222') OR (1=1);--"));
           prettyPrint(c.getInfo("5555555555"));
           pause();
 
