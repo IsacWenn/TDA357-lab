@@ -39,8 +39,8 @@ public class TestPortal {
           System.out.println("############################# TEST 4 #############################");
           System.out.println("UNREGISTER A STUDENT FROM A COURSE TWICE AND CHECK THAT THE STUDENT NO LONGER IS REGISTERED");
           System.out.println("TO THAT COURSE AND THAT THE ERROR RESPONSE WORKS.");
-          System.out.println(c.unregister("2222222222", "'TTT111'"));
-          System.out.println(c.unregister("2222222222", "'TTT111'"));
+          System.out.println(c.unregister("2222222222", "TTT111"));
+          System.out.println(c.unregister("2222222222", "TTT111"));
           prettyPrint(c.getInfo("2222222222"));
           pause();
 
@@ -60,7 +60,7 @@ public class TestPortal {
           System.out.println("UNREGISTER A STUDENT FROM A LIMITED COURSE THAT THEY ARE ALREADY REGISTERED TO AND HAS AT LEAST");
           System.out.println("TWO OTHER STUDENTS IN THE WAITING QUEUE. THEN REGISTER THE SAME STUDENT ONCE AGAIN AND CHECK THAT");
           System.out.println("THEY GET THE CORRECT LAST POSITION IN THE WAITINGLIST.");
-          System.out.println(c.unregister("1111111111", "'TTT555'"));
+          System.out.println(c.unregister("1111111111", "TTT555"));
           System.out.println(c.register("1111111111", "TTT555"));
           prettyPrint(c.getInfo("1111111111"));
           pause();
@@ -71,7 +71,7 @@ public class TestPortal {
           System.out.println("############################# TEST 7 #############################");
           System.out.println("UNREGISTER AND REGISTER THE SAME STUDENT FOR THE SAME LIMITED COURSE AND CHECK THAT THE STUDENT IS");
           System.out.println("FIRST REMOVED AND THEN ENDS UP IN THE SAME POSITION AS BEFORE.");
-          System.out.println(c.unregister("1111111111", "'TTT555'"));
+          System.out.println(c.unregister("1111111111", "TTT555"));
           prettyPrint(c.getInfo("1111111111"));
           System.out.println(c.register("1111111111", "TTT555"));
           prettyPrint(c.getInfo("1111111111"));
@@ -88,7 +88,7 @@ public class TestPortal {
                   "\n check that 3333333333 is still in the same place in the queue." +
                   "\n ");
           prettyPrint(c.getInfo("3333333333"));
-          System.out.println(c.unregister("2222222222", "'TTT444'"));
+          System.out.println(c.unregister("2222222222", "TTT444"));
           prettyPrint(c.getInfo("3333333333"));
           pause();
 
